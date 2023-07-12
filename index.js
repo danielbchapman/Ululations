@@ -1,0 +1,68 @@
+import Eos from './EtcEosConnection'
+import fs from 'fs-extra'
+import midi from 'midi'
+import startup from './engine'
+console.log(`Testing MIDI connection`)
+let TIMEOUT = 60000 * 5
+let DEVICE_TARGET = 'Alesis Recital'
+let EOS = 'localhost'
+let input = new midi.Input()
+let eos = null
+
+let total = input.getPortCount();
+console.log(total)
+let device = {
+    number: -1,
+    name: undefined
+}
+
+let eosConfig = {
+    eosIpAddress: 'localhost',
+    eosOscPort: 3032,
+    debug: true,
+    watchoutIpAddress: 'localhost',
+    watchoutPort: 3040 
+    //production, 3039 for Display
+}
+
+for(let i = 0; i < total; i++) {
+    let name = input.getPortName(i)
+    console.log(`Device ${i} ${name}`)
+    if(name.trim() == DEVICE_TARGET) {
+        device.number = i
+        device.name = name
+    }
+}
+
+if(device.name) {
+    //Initialize a connection
+    eos = Eos.connect(eosConfig)
+    let listener = startup(device, Eos)
+    input.on('message', listener)
+    /**
+    input.on('message', (deltaTime, message) => {
+        // The message is an array of numbers corresponding to the MIDI bytes:
+        //   [status, data1, data2]
+        // https://www.cs.cf.ac.uk/Dave/Multimedia/node158.html has some helpful
+        // information interpreting the messages.
+        console.log(`m: ${message} d: ${deltaTime}`);
+      });
+     */
+    input.openPort(device.number)
+    
+    console.log(`opening port ${device.number}`)
+
+
+} else {
+    console.log(`MIDI DEVICE NOT CONNECTED`)
+    input.closePort()
+    process.exit()
+}
+
+setTimeout(()=>{
+    console.log(`EXITING NODE after ${TIMEOUT}`)
+    input.closePort()
+    Eos.shutdown()
+    process.exit()
+}, TIMEOUT)
+
