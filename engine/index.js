@@ -3,12 +3,20 @@ import {
     MODULUS_12_OCTIVE
 } from './mappings'
 
+import {
+    debug,
+    verbose,
+    critical,
+    info,
+    warn,
+} from './../SimpleLog'
+
 let _EOS = null
 let oscSend = (command, args = []) => {
     if(_EOS) {
         _EOS.send(command, args)
     } else {
-        console.log(`\t[EOS-MOCK]${command} ${args}`)
+        info(`\t[EOS-MOCK]${command} ${args}`)
     }
     
 }
@@ -33,7 +41,7 @@ let faderSelect = (bank, fader, velocity) => {
 }
 
 let startup = (device, eos)=> {
-    console.log('listener has been called')
+    debug('listener has been called')
     _EOS = eos
     //Fire up the Eos faders if needed, I'm allocating 20
     for(let i = 1; i <= 10; i++) {
@@ -43,7 +51,7 @@ let startup = (device, eos)=> {
 
     //this is the listener
     return (deltaTime, message) =>{
-        console.log(`[${device.number}:${device.name}]\tdeltaTime:${deltaTime} -> ${message}`)
+        info(`[${device.number}:${device.name}]\tdeltaTime:${deltaTime} -> ${message}`)
         if(!message || !message.length) {
             console.log('MIDI MESSAGE FORMAT ERROR')
         }
@@ -53,13 +61,13 @@ let startup = (device, eos)=> {
         const velocity = message[2]
         const time = message.deltaTime
         if(mode == 144) { //note on
-            //console.log(`\tNOTE: ${message}`)
+            //debug(`\tNOTE: ${message}`)
             let oct = note % 12
             let bank = (oct / 10 | 0) + 1
             let fader = oct + 1
             faderSelect(bank, fader, velocity)
         } else {
-            console.log(`\tunsupported mode ${mode}`)
+            warn(`\tunsupported mode ${mode}`)
         }
     }
 }

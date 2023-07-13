@@ -1,13 +1,16 @@
 
 import osc from 'osc'
-
+import { 
+	critical,
+	verbose,
+	debug,
+	warn,
+} from './SimpleLog'
 const TIME_OUT = 5000
 const VERBOSE = false
 
 const log = (str, args) => {
-	if(VERBOSE) {
-		console.log(str, args)
-	}
+	verbose(str, args)
 }
 export const VERSIONS = {
 	VERSION_1_0: 1.0,
@@ -46,7 +49,7 @@ class EosTcpHandler {
 		const empty = ()=>{}
 		const basic = (type) => {
 			return (str, other) => {
-				console.log('[' + type + '] ' + str, other)
+				log('[' + type + '] ' + str, other)
 			}
 		}
 		//PROPERTIES
@@ -111,8 +114,8 @@ class EosTcpHandler {
 			this.onVerbose('SLIP? ' + this._tcp.options.useSLIP)
 	
 			// this._tcp.on('osc', (packet) => {
-			// 	console.log('----osc')
-			// 	console.log(packet)
+			// 		log('----osc')
+			// 		log(packet)
 			// })
 
 			this._tcp.on('message', (message) => {
@@ -143,23 +146,23 @@ class EosTcpHandler {
 
 
 			// this._tcp.on('data2', (buf) => {
-			// 	console.log('data')
-			// 	//console.log(buf)
+			// 	log('data')
+			// 	//log(buf)
 			// 	let decoded = null
 
 			// 	if(version == 1.0)
 			// 	{
-			// 		console.log("decode 1.0")
+			// 		log("decode 1.0")
 			// 		const trimmed = buf.buffer.slice(buf.byteOffset + 4, buf.byteOffset + buf.byteLength)
 			// 		decoded = this._tcp.decodeSLIPData(buf)					
-			// 		console.log(decoded)
+			// 		log(decoded)
 			// 	}
 			// 	else //VERSION 1.1
 			// 	{
-			// 		console.log("decode 1.1")
+			// 		log("decode 1.1")
 			// 		decoded = this._tcp.decodeSLIPData(buf)
-			// 		console.log(buf.toString())
-			// 		console.log('decoded-> ' + decoded)
+			// 		log(buf.toString())
+			// 		log('decoded-> ' + decoded)
 			// 	}
 
 
@@ -191,32 +194,32 @@ class EosTcpHandler {
 				if( (''+error).includes(`The header of an OSC packet`) ) {
 					this.onVerbose('[OSC] Version Error | Wrong OSC Version, Expected ' + (version == VERSIONS.VERSION_1_0 ? '1.0' : '1.1' ))
 					this.onError( (''+error).split('\\n')[0])
-					//console.log('[OSC] Version Error | Wrong OSC Version, Expected ' + (version == VERSIONS.VERSION_1_0 ? '1.0' : '1.1' ))
-					//console.log(error)
+					//log('[OSC] Version Error | Wrong OSC Version, Expected ' + (version == VERSIONS.VERSION_1_0 ? '1.0' : '1.1' ))
+					//log(error)
 					return
 				}
 
 				if(!error.code) {
 					this.onVerbose('[OSC] UNKNOWN ERROR, probably a bug in the library, disregard ')
-					console.log(error)
+					critical(error)
 					return
 				}
 
 				//Console output, hard coded
-				console.log('----------OSC ERROR---------')
-				console.log(`code: ${error.code}`)
-				console.log(`syscall: ${error.syscall}`)
-				console.log(`address: ${error.address}`)
-				console.log(`port: ${error.port}`)
-				console.log(error)
-				console.log('----------END ERROR---------')
+				log('----------OSC ERROR---------')
+				log(`code: ${error.code}`)
+				log(`syscall: ${error.syscall}`)
+				log(`address: ${error.address}`)
+				log(`port: ${error.port}`)
+				log(error)
+				log('----------END ERROR---------')
 
 				if('ECONNREFUSED' == error.code) {
 					this.onError('Connecttion Refused')
 					this.onVerbose('Connection Refused')
 					reject(error)
-					console.log('OSC ECONNREFUSED')
-					console.log(error)
+					log('OSC ECONNREFUSED')
+					log(error)
 					// this._tcp.close()
 					// this._tcp = null
 				}
@@ -226,7 +229,7 @@ class EosTcpHandler {
 			if(this.version == VERSIONS.VERSION_1_0)
 			{
 				this._tcp.on('data', (buf)=>{
-					//console.log('data -> ' + buf)
+					//log('data -> ' + buf)
 					const trimmed = buf.buffer.slice(buf.byteOffset + 4, buf.byteOffset + buf.byteLength)
 					const decoded = this._tcp.decodeOSC(trimmed) //this calls a listener to process it.
 				})
@@ -253,7 +256,11 @@ commandLine: ${this.commandLine}
 	}
 
 	send(address, args = []) {
-		//console.log('EosTcpHandler::send::info::VERSION -> ' + this.version)
+		if(!this._tcp) {
+			critical('OSC-MODULE - ERROR>> TCP SOCKET NULL')
+			return
+		}
+		//log('EosTcpHandler::send::info::VERSION -> ' + this.version)
 		const message = {
 			address: address,
 			args: args
@@ -264,17 +271,17 @@ commandLine: ${this.commandLine}
 			
 			this._tcp.send(message)
 		} else { //Packet Length Encoding
-			console.log('EosTcpHandler::send::info Version 1 packet', message)
+			log('EosTcpHandler::send::info Version 1 packet', message)
 			let encoded = this._tcp.encodeOSC(message)
 			encoded = encoded.slice(1, encoded.length - 1)//remove SLIP encoding 
-			//console.log('encoded -> ' + encoded)
+			//log('encoded -> ' + encoded)
 			var dv = new DataView(new ArrayBuffer(encoded.length + 4))
 			dv.setInt32(0, encoded.length, false /*Big Endian*/)
 	
 			for(let i = 0; i < encoded.length; i++) {
 				dv.setUint8(i +4 , encoded[i])
 			}
-			//console.log(dv.buffer.toString())
+			//log(dv.buffer.toString())
 	
 			// if (onSend) {
 			// 	onSend(message)
