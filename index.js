@@ -16,7 +16,7 @@ import {
 setLevel(LEVELS.INFO)
 //setLevel(LEVELS.DEBUG)
 let TIMEOUT = 60000 * 5
-let DEVICE_TARGET = 'Alesis Recital'
+let DEVICE_TARGET = 'Network Production'
 let EOS = 'localhost'
 let input = new midi.Input()
 let eos = null

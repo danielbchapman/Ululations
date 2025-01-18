@@ -10,13 +10,18 @@
     "@babel/core": "^7.22.8",
     "@babel/node": "^7.22.6",
     "@babel/preset-env": "^7.22.7",
+    "easymidi": "^3.1.0",
     "format-unicorn": "^1.1.1",
     "fs-extra": "^11.1.1",
     "midi": "^2.0.0",
     "moment": "2.18.1",
-    "osc": "^2.4.4"
+    "osc": "^2.4.4",
+    "yarn": "^1.22.19"
   },
   "scripts": {
-    "start": "babel-node index.js"
+    "test": "babel-node MidiLib.js",
+    "midi": "babel-node MidiRaw.js",
+    "start": "babel-node index.js",
+    "titles": "babel-node titles.js"
   }
 }
