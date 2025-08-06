@@ -22,6 +22,7 @@
     "test": "babel-node MidiLib.js",
     "midi": "babel-node MidiRaw.js",
     "start": "babel-node index.js",
-    "titles": "babel-node titles.js"
+    "titles": "babel-node titles.js",
+    "bridge": "babel-node bridge.js"
   }
 }
