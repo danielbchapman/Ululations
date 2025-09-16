@@ -11,6 +11,7 @@
     "@babel/node": "^7.22.6",
     "@babel/preset-env": "^7.22.7",
     "easymidi": "^3.1.0",
+    "exit-hook": "^4.0.0",
     "format-unicorn": "^1.1.1",
     "fs-extra": "^11.1.1",
     "midi": "^2.0.0",
@@ -23,6 +24,11 @@
     "midi": "babel-node MidiRaw.js",
     "start": "babel-node index.js",
     "titles": "babel-node titles.js",
-    "bridge": "babel-node bridge.js"
+    "bridge": "babel-node bridge.js",
+    "osc": "babel-node midiToOSC.js",
+    "droplets" : "babel-node levels/droplets.js",
+    "flip" : "babel-node levels/flip.js",
+    "bubbles" : "babel-node levels/bubbles.js",
+    "underwater" : "babel-node levels/underwater.js"
   }
 }
