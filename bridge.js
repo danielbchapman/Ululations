@@ -151,17 +151,38 @@ input.on('message', (dT, msg) => {
         const clamped = clampV(velocity)
         sendOsc('/ululations/bubble/low', clampV(velocity))
         console.log(`LOW -> \t${channel} ${note} ${velocity} -> ${clamped}: ${qlab}`)
-
+    } else if(note == STATICS.MIDI_CTRL_BUBBLE_WITH_VOICE_LOW) {
+        const clamped = clampV(velocity)
+        sendOsc('/ululations/bubble/guiding', clampV(velocity))
+        console.log(`LOW -> \t${channel} ${note} ${velocity} -> ${clamped}: ${qlab}`)
     //MORES CODE
     } else if( note == STATICS.MIDI_MORSE_CODE_LONG) {
         console.log('mores code long')
-        sendQlabGo('cue/mores-long/start')
+        sendQlabGo('/cue/moreslong/start')
     } else if( note == STATICS.MIDI_MORSE_CODE_SHORT) {
         console.log('mores code short')
-        sendQlabGo('cue/mores-short/start')
+        sendQlabGo('/cue/moresshort/start')
+    } else if( note == STATICS.MIDI_GUIDING_VOICE_SPLASH) {
+        console.log('new GV Splash @ 0.15')
+        sendOsc('/ululations/middle', clampV(30))
+        setTimeout(()=>{
+            sendOsc('/ululations/middle', clampV(0));
+        }, 250)
     }
 })
 
+//CONSTANT RUNNERS
+var shutdown = 0
+setInterval(()=>{
+    shutdown++
+    if(shutdown % 10 == 0) {
+        console.log('INTERFAVL KILL BUBBLES DATA 1hz')
+    }
+    
+    sendOsc('/ululations/bubble/low', 0.00)
+    sendOsc('/ululations/bubble/middle', 0.00)
+    sendOsc('/ululations/bubble/high', 0.00)
+}, 1000)
 
 const clamp = (value, min = 0, max = 127) => {
     if(!value) {
