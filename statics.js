@@ -34,4 +34,6 @@ export default {
 
     REMAP_PORT: 53021,
     REMAP_REPLY_PORT: 53022,
+    REMAP_MIDI_SOMI_IN: 'UlulationsOSC',
+    REMAP_MIDI_OUT: 'UlulationsMIDI',
 }  
