@@ -31,4 +31,7 @@ export default {
     MIDI_MORSE_CODE_LONG: 16,
 
     MIDI_GUIDING_VOICE_SPLASH: 20,
+
+    REMAP_PORT: 53021,
+    REMAP_REPLY_PORT: 53022,
 }  

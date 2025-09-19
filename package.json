@@ -29,6 +29,7 @@
     "droplets" : "babel-node levels/droplets.js",
     "flip" : "babel-node levels/flip.js",
     "bubbles" : "babel-node levels/bubbles.js",
-    "underwater" : "babel-node levels/underwater.js"
+    "underwater" : "babel-node levels/underwater.js",
+    "remap": "babel-node remap.js"
   }
 }
