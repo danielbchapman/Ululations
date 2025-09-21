@@ -10,7 +10,8 @@ import STATICS from './statics'
 const DEV_DATA = false
 
 // SETUP
-const PORT_NAME = 'UlulationsOSC'
+const PORT_NAME = STATICS.ULULATIONS_OSC_MIDI;//'UlulationsOSC'
+
 //const PORT_NAME = "E-MU XMidi1X1 Tab"
 const PULSE_TIME = 1000/20; //assume 60FPS, we might need to drop to 30
 const MIDI_CHANNEL = 0;

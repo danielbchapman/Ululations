@@ -55,10 +55,6 @@ let MAP_2_TO = 2
 let MAP_3_TO = 3
 let MAP_4_TO = 4
 
-const output = new midi.Output();
-const input = new midi.Input();
-
-
 //MIDI 
 let oscListener = new osc.UDPPort({
     localAddress: STATICS.UNREAL,
@@ -69,6 +65,8 @@ let oscListener = new osc.UDPPort({
 })
 
 oscListener.open();
+const input = new midi.Input();
+const output = new midi.Output();
 
 
 console.log('MIDI PORTS ARE LISTING ALL PORTS')
@@ -87,6 +85,10 @@ for(let i = 0; i < output.getPortCount(); i++) {
     }
 }
 
+
+
+
+console.log(`CONNCTIN TO PORTS IN->[${PORT_IN_NAME_INSTANCE}][${PORT_IN}] OUT->[${PORT_OUT_NAME_INSTANCE}][${PORT_OUT}]`)
 //This is terrible OSC, this is just to make it easy
 oscListener.on("message", (oscMsg, timeTag, info) => {
     console.log("An OSC message just arrived!", oscMsg);
@@ -135,13 +137,26 @@ if(PORT_IN < 0 || PORT_OUT < 0) {
 } else {
     console.log(`CONNECTING TO PORT IN-> ${PORT_IN} ${PORT_IN_NAME_INSTANCE} | OUT -> ${PORT_OUT} ${PORT_OUT_NAME_INSTANCE}`)
 }
-
-input.openPort(PORT_IN)
-output.openPort(PORT_OUT)
 */
 
-input.openPort(PORT_IN)
-output.openPort(PORT_OUT)
+console.log(`opening port ${PORT_IN}`)
+try {
+    input.openPort(PORT_IN)
+    console.log('port is open')
+} catch (e) {
+    console.log('failed to open input ')
+    console.log(e);
+}
+
+console.log(`opening port ${PORT_OUT}`)
+try {
+    output.openPort(PORT_OUT)
+} catch (e) {
+    console.log('failed to open input ')
+    console.log(e);
+}
+
+//output.openPort(PORT_OUT)
 
 const log = (msg) => {
     console.log(`${msg} | MAP \t[1]=>[${MAP_1_TO}]\t[2]=>[${MAP_2_TO}]\t[3]=>[${MAP_3_TO}]\t[4]=>[${MAP_4_TO}]`)
@@ -237,7 +252,7 @@ const ativityInterval = setInterval(sendActivity, 150)
 //MIDI RELAY LOGIC
 
 input.on('message', (dT, msg) => {
-    //console.log('message in')
+    console.log('message in')
     if(msg && msg[0]) {
         const type = msg[0] & 0xF0;
         const ch = msg[0] & 0x0F;    

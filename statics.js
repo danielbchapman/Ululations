@@ -4,6 +4,7 @@ export default {
     AUDIO: "192.168.0.99",
     BACKUP_LAPTOP: "192.168.0.100",
 
+    ULULATIONS_OSC_MIDI: 'UlulationsOSC',
     //NOTES
     MIDI_DROPLET_LOW: 3,
     MIDI_DROPLET_MED: 2,
@@ -34,6 +35,6 @@ export default {
 
     REMAP_PORT: 53021,
     REMAP_REPLY_PORT: 53022,
-    REMAP_MIDI_SOMI_IN: 'UlulationsOSC',
+    REMAP_MIDI_SOMI_IN: 'SOMI-IN',
     REMAP_MIDI_OUT: 'UlulationsMIDI',
 }  
