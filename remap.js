@@ -59,6 +59,7 @@ let MAP_4_TO = 4
 let MAP_5_TO = 5
 let MAP_6_TO = 6
 
+let MAPPED_TO = [1,2,3,4,5,6];
 
 
 //MIDI 
@@ -109,16 +110,22 @@ oscListener.on("message", (oscMsg, timeTag, info) => {
 
             if(id == 1) {
                 MAP_1_TO = mapped
+                MAPPED_TO[0] = mapped
             } else if (id == 2) {
                 MAP_2_TO = mapped
+                MAPPED_TO[1] = mapped
             } else if (id == 3) {
                 MAP_3_TO = mapped
+                MAPPED_TO[2] = mapped
             } else if (id == 4) {
                 MAP_4_TO = mapped
+                MAPPED_TO[3] = mapped
             } else if (id == 5) {
                 MAP_5_TO = mapped
+                MAPPED_TO[4] = mapped
             } else if (id == 6) {
                 MAP_6_TO = mapped
+                MAPPED_TO[5] = mapped
             }
             console.log(`-> mapping ${id} to ${mapped}`)
 
@@ -171,6 +178,7 @@ const log = (msg) => {
 
 
 const sendOscUpdateToTouchOSC = () =>{
+    //OLD DIRECT METHOD
         for(let i = 1; i < 7; i++) {
             //Sensor 1
             if( i == MAP_1_TO ) {
@@ -277,14 +285,27 @@ const ativityInterval = setInterval(sendActivity, 150)
  * So we have 6 channels incomming, if we 
  */
 const debugLogMidi = (index, ch, out, msg) => {
-    console.log(`CHANNEL ${index + 1} [${ch}->${msg}] remapped to ch[${out} HUMAN ${out + 1}]`)
+    console.log(`<SENSOR ${index + 1}> mapped to <SENSOR ${out-4+1}>[${ch}->${msg}] || ch[${out} HUMAN ${out + 1}]`)
 }
 input.on('message', (dT, msg) => { 
     const DEBUG_LOG = true
     // console.log('message in')
     if(msg && msg[0]) {
         const type = msg[0] & 0xF0;
-        const ch = msg[0] & 0x0F;    
+        const ch = msg[0] & 0x0F;
+
+        for(let i = 0; i < MAPPED_TO.length; i++) {
+            if(ch == SOMI_MIDI_CHANNEL_MAP[i]) {
+                let out =  SOMI_MIDI_CHANNEL_MAP[MAPPED_TO[i] - 1]
+                
+                if(DEBUG_LOG) {
+                    debugLogMidi(i, ch, out, msg)
+                }  
+                break
+            }
+        }
+        
+        return;
 
         //(1) SENSOR CHANNEL 5
         if(ch == SOMI_MIDI_CHANNEL_MAP[0]) {
