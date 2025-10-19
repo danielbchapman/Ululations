@@ -287,6 +287,15 @@ const ativityInterval = setInterval(sendActivity, 150)
 const debugLogMidi = (index, ch, out, msg) => {
     console.log(`<SENSOR ${index + 1}> mapped to <SENSOR ${out-4+1}>[${ch}->${msg}] || ch[${out} HUMAN ${out + 1}]`)
 }
+
+const printHumanMidi = (msg) => {
+    const type = msg[0] & 0xF0;
+    const ch = msg[0] & 0x0F;
+    const note = msg[1];
+    const value = msg[2];
+    console.log(`\tMIDI-> ch [${ch}] note:[${note}] value:[${value}] type:${type}`)
+}
+
 input.on('message', (dT, msg) => { 
     const DEBUG_LOG = true
     // console.log('message in')
@@ -297,9 +306,13 @@ input.on('message', (dT, msg) => {
         for(let i = 0; i < MAPPED_TO.length; i++) {
             if(ch == SOMI_MIDI_CHANNEL_MAP[i]) {
                 let out =  SOMI_MIDI_CHANNEL_MAP[MAPPED_TO[i] - 1]
-                
+                const remap = msg.slice()
+                const lead = type | out
+                remap[0] = lead
                 if(DEBUG_LOG) {
                     debugLogMidi(i, ch, out, msg)
+                    printHumanMidi(msg)
+                    printHumanMidi(remap)
                 }  
                 break
             }
