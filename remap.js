@@ -3,6 +3,11 @@ import osc from 'osc'
 import exitHook from 'exit-hook'
 import STATICS from './statics'
 
+let SOMI_MIDI_CHANNEL_MAP = []
+for(let i = 0; i < STATICS.SOMI_HUMAN_MIDI_CHANNEL_MAP.length; i++) {
+    SOMI_MIDI_CHANNEL_MAP[i] = STATICS.SOMI_HUMAN_MIDI_CHANNEL_MAP[i] - 1
+}
+console.log(SOMI_MIDI_CHANNEL_MAP)
 //START BITWISE TEST
 /*
 let x = 0x82
@@ -21,11 +26,6 @@ console.log(`NEW REWRITE -> ${nC.toString(16)}`)
 process.exit()
 */
 //END TEST
-const SOMI_1 = 0x00;
-const SOMI_2 = 0x01;
-const SOMI_3 = 0x02;
-const SOMI_4 = 0x03;
-
 const MIDI_1 = 0x00;
 const MIDI_2 = 0x01;
 const MIDI_3 = 0x02;
@@ -50,10 +50,16 @@ let PORT_IN_NAME_INSTANCE = -1;
 let PORT_OUT = -1;
 let PORT_OUT_NAME_INSTANCE = -1;
 
+//MAYBE THIS IS AN ARRAY?...would be less "if statement spaghetti"
+//It seems to start at 5, so that's channel 1 + 4 then back one because MIDI is zero index -> 4
 let MAP_1_TO = 1
 let MAP_2_TO = 2
 let MAP_3_TO = 3
 let MAP_4_TO = 4
+let MAP_5_TO = 5
+let MAP_6_TO = 6
+
+
 
 //MIDI 
 let oscListener = new osc.UDPPort({
@@ -85,9 +91,6 @@ for(let i = 0; i < output.getPortCount(); i++) {
     }
 }
 
-
-
-
 console.log(`CONNCTIN TO PORTS IN->[${PORT_IN_NAME_INSTANCE}][${PORT_IN}] OUT->[${PORT_OUT_NAME_INSTANCE}][${PORT_OUT}]`)
 //This is terrible OSC, this is just to make it easy
 oscListener.on("message", (oscMsg, timeTag, info) => {
@@ -112,6 +115,10 @@ oscListener.on("message", (oscMsg, timeTag, info) => {
                 MAP_3_TO = mapped
             } else if (id == 4) {
                 MAP_4_TO = mapped
+            } else if (id == 5) {
+                MAP_5_TO = mapped
+            } else if (id == 6) {
+                MAP_6_TO = mapped
             }
             console.log(`-> mapping ${id} to ${mapped}`)
 
@@ -191,6 +198,20 @@ const sendOscUpdateToTouchOSC = () =>{
             } else {
                 sendOsc(`/map-4-${i}`, 0.00)
             }
+
+            //Sensor 5
+            if( i == MAP_5_TO ) {
+                sendOsc(`/map-5-${i}`, 1.00)
+            } else {
+                sendOsc(`/map-5-${i}`, 0.00)
+            }
+
+            //Sensor 6
+            if( i == MAP_6_TO ) {
+                sendOsc(`/map-6-${i}`, 1.00)
+            } else {
+                sendOsc(`/map-6-${i}`, 0.00)
+            }
         }
         
 }
@@ -238,40 +259,95 @@ const sendActivity = () => {
             return 0.00
         }
     }
-    copy = [ _dFn(0), _dFn(1), _dFn(2), _dFn(3) ]
+    copy = [ _dFn(0), _dFn(1), _dFn(2), _dFn(3), _dFn(4), _dFn(5) ]
     //end dummy sensor code
     _dummy++
     sendOsc(`/activity-1`, copy[0])
     sendOsc(`/activity-2`, copy[1])
     sendOsc(`/activity-3`, copy[2])
     sendOsc(`/activity-4`, copy[3])
+    sendOsc(`/activity-5`, copy[4])
+    sendOsc(`/activity-6`, copy[5])
 }
 
 
 const ativityInterval = setInterval(sendActivity, 150)
 //MIDI RELAY LOGIC
-
-input.on('message', (dT, msg) => {
-    console.log('message in')
+/**
+ * So we have 6 channels incomming, if we 
+ */
+const debugLogMidi = (index, ch, out, msg) => {
+    console.log(`CHANNEL ${index + 1} [${ch}->${msg}] remapped to ch[${out} HUMAN ${out + 1}]`)
+}
+input.on('message', (dT, msg) => { 
+    const DEBUG_LOG = true
+    // console.log('message in')
     if(msg && msg[0]) {
         const type = msg[0] & 0xF0;
         const ch = msg[0] & 0x0F;    
+
+        //(1) SENSOR CHANNEL 5
+        if(ch == SOMI_MIDI_CHANNEL_MAP[0]) {
+            let out =  SOMI_MIDI_CHANNEL_MAP[MAP_1_TO - 1]
+            if(DEBUG_LOG) {
+                debugLogMidi(0, ch, out, msg)
+            }  
+
+        //(2) SENSOR CHANNEL 6
+        } else if(ch == SOMI_MIDI_CHANNEL_MAP[1]) {
+            let out =  SOMI_MIDI_CHANNEL_MAP[MAP_1_TO - 1]
+            if(DEBUG_LOG) {
+                debugLogMidi(0, ch, out, msg)
+            }  
+
+        //(3) SENSOR CHANNEL 7
+        } else if(ch == SOMI_MIDI_CHANNEL_MAP[2]) {
+            let out =  SOMI_MIDI_CHANNEL_MAP[MAP_1_TO - 1]
+            if(DEBUG_LOG) {
+                debugLogMidi(0, ch, out, msg)
+            }  
+
+        //(4) SENSOR CHANNEL 8
+        } else if(ch == SOMI_MIDI_CHANNEL_MAP[3]) {
+            let out =  SOMI_MIDI_CHANNEL_MAP[MAP_1_TO - 1]
+            if(DEBUG_LOG) {
+                debugLogMidi(0, ch, out, msg)
+            }  
+
+        //(5) SENSOR CHANNEL 9
+        } else if(ch == SOMI_MIDI_CHANNEL_MAP[4]) {
+            let out =  SOMI_MIDI_CHANNEL_MAP[MAP_1_TO - 1]
+            if(DEBUG_LOG) {
+                debugLogMidi(0, ch, out, msg)
+            }  
+        //(6) SENSOR CHANNEL 10
+        } else if(ch == SOMI_MIDI_CHANNEL_MAP[5]) {
+            let out =  SOMI_MIDI_CHANNEL_MAP[MAP_1_TO - 1]
+            if(DEBUG_LOG) {
+                debugLogMidi(0, ch, out, msg)
+            }  
+        } 
+
         console.log(`type:[${type.toString(16)}->${ch.toString(16)}] m: ${msg} d: ${dT}`)
 
         const out = [ msg[0], msg[1], msg[2] ]
 
-        if(ch == 1) {
+        if(ch == SOMI_MIDI_CHANNEL_MAP[0]) {
             out[0] = type | ONE_TO_SIX[MAP_1_TO]
-        } else if (ch == 2) {
+
+        } else if (ch == SOMI_MIDI_CHANNEL_MAP[1]) {
             out[0] = type | ONE_TO_SIX[MAP_2_TO]
-        } else if (ch == 3) {
+
+        } else if (ch == SOMI_MIDI_CHANNEL_MAP[2]) {
             out[0] = type | ONE_TO_SIX[MAP_3_TO]
-        } else if (ch == 4) {
+
+        } else if (ch == SOMI_MIDI_CHANNEL_MAP[3]) {
             out[0] = type | ONE_TO_SIX[MAP_4_TO]
         }
 
 
         output.sendMessage(out)
+        console.log(`\tout:[${type.toString(16)}->${ch.toString(16)}] m: ${msg} d: ${dT}`)
     } else {
         console.log(`m: ${msg} d: ${dT}`)
         output.sendMessage(msg)

@@ -1,5 +1,5 @@
 export default {
-    UNREAL: "192.168.0.124",
+    UNREAL: "192.168.1.124",
     MAC: "192.168.0.34",
     AUDIO: "192.168.0.99",
     BACKUP_LAPTOP: "192.168.0.100",
@@ -37,4 +37,7 @@ export default {
     REMAP_REPLY_PORT: 53022,
     REMAP_MIDI_SOMI_IN: 'SOMI-IN',
     REMAP_MIDI_OUT: 'UlulationsMIDI',
+
+    //SOMI MAPPINGS HERE:
+    SOMI_HUMAN_MIDI_CHANNEL_MAP: [5,6,7,8,9,10],
 }  
