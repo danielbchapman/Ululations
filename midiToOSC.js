@@ -1,8 +1,9 @@
 import midi from 'midi'
 import osc from 'osc'
 import exitHook from 'exit-hook'
+import STATICS from './statics'
 // SETUP
-const PORT_NAME = 'UlulationsOSC'
+const PORT_NAME = STATICS.ULULATIONS_OSC_MIDI
 const PULSE_TIME = 1000/20; //assume 60FPS, we might need to drop to 30const MIDI_CHANNEL = 0;
 const MIDI_ON = 0x90 & 0xF0;  // mask off all but top 4 bits
 const MIDI_OFF = 0x80 & 0xF0; //and yes, this shift is dumb, but it is to remember that it is Command / Channel as one set of bytes in the messeage format
@@ -15,7 +16,7 @@ let PORT_NAME_INSTANCE = -1;
 let oscListener = new osc.UDPPort({
     localAddress: "0.0.0.0",
     localPort: 53008,
-    remoteAddress: "192.168.1.124",//unreal
+    remoteAddress: STATICS.UNREAL,//unreal
     remotePort:53007,
     metadata:true,
 })

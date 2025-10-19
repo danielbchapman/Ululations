@@ -20,6 +20,8 @@
     "yarn": "^1.22.19"
   },
   "scripts": {
+    "ululations": "babel-node midiToOSC.js",
+    "remap": "babel-node remap.js",
     "test": "babel-node MidiLib.js",
     "midi": "babel-node MidiRaw.js",
     "start": "babel-node index.js",
@@ -30,7 +32,6 @@
     "flip" : "babel-node levels/flip.js",
     "bubbles" : "babel-node levels/bubbles.js",
     "underwater" : "babel-node levels/underwater.js",
-    "remap": "babel-node remap.js",
     "droplets": "babel-node execute/test.js"
   }
 }
