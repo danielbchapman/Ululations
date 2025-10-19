@@ -2,6 +2,29 @@ import midi from 'midi'
 import osc from 'osc'
 import exitHook from 'exit-hook'
 import STATICS from './statics'
+import os from 'os'
+
+
+//GET ALL IP ADDRESSES
+function getAllIpAddresses() {
+  const networkInterfaces = os.networkInterfaces();
+  const ipAddresses = [];
+
+  for (const interfaceName in networkInterfaces) {
+    const interfaces = networkInterfaces[interfaceName];
+    for (const iface of interfaces) {
+      // Filter out internal (loopback) addresses and only include IPv4 addresses
+      if (iface.family === 'IPv4' && !iface.internal) {
+        ipAddresses.push(iface.address);
+      }
+    }
+  }
+  return ipAddresses;
+}
+
+const ips = getAllIpAddresses();
+console.log('All available IP addresses:', ips);
+
 
 let SOMI_MIDI_CHANNEL_MAP = []
 for(let i = 0; i < STATICS.SOMI_HUMAN_MIDI_CHANNEL_MAP.length; i++) {
@@ -61,12 +84,12 @@ let MAP_6_TO = 6
 
 let MAPPED_TO = [1,2,3,4,5,6];
 
-
+const REMAP_OSC_IP = STATICS.REMAP_OSC_IP || ips[0];//use the first address by default
 //MIDI 
 let oscListener = new osc.UDPPort({
     localAddress: STATICS.UNREAL,
     localPort: STATICS.REMAP_PORT,
-    remoteAddress: STATICS.UNREAL,
+    remoteAddress: REMAP_OSC_IP,
     remotePort: STATICS.REMAP_REPLY_PORT,
     metadata:true,
 })
@@ -314,6 +337,8 @@ input.on('message', (dT, msg) => {
                     printHumanMidi(msg)
                     printHumanMidi(remap)
                 }  
+
+                output.send(remap)
                 break
             }
         }

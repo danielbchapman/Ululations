@@ -33,6 +33,7 @@ export default {
 
     MIDI_GUIDING_VOICE_SPLASH: 20,
 
+    REMAP_OSC_IP: null,
     REMAP_PORT: 53021,
     REMAP_REPLY_PORT: 53022,
     REMAP_MIDI_SOMI_IN: 'SOMI-IN',
